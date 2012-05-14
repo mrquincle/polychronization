@@ -162,17 +162,14 @@ void Network::updateSynapses() {
 		// adjust only excitatory connections
 		if ((*it)->pre->neuron->getSign() == NS_INHIBITORY) continue;
 
-		// if a pre synaptic spike reaches the post-synaptic neuron
+		// if a pre-synaptic spike reaches the post-synaptic neuron
 		if ((*it)->pre->raised((*it)->delay)) {
 			// apply LTD with the most recent post-synaptic spike
 			int first_spike = (*it)->post->first();
 			if (first_spike >= 0) {
-//				if (t > 1990)
-//					cout << "Increment weight from " << (*it)->weight;
 				(*it)->weight += 0.12 * exp(+first_spike/(NN_VALUE)HISTORY_SIZE);
-//				if (t > 1990)
-//					cout << " to " << (*it)->weight << endl;
 				// increase the post-synaptic neuron's input
+				// TODO: I forgot where this factor 3 comes from, have to check that
 				(*it)->post->input += (*it)->weight / NN_VALUE(3);
 			}
 		}
@@ -182,11 +179,7 @@ void Network::updateSynapses() {
 			// so occurred at least "delay" ms ago
 			int first_spike = (*it)->pre->first((*it)->delay);
 			if (first_spike >= 0) {
-//				if (t > 1990)
-//					cout << "Decrement weight from " << (*it)->weight;
 				(*it)->weight -= 0.10 * exp(-first_spike/(NN_VALUE)HISTORY_SIZE);
-//				if (t > 1990)
-//					cout << " to " << (*it)->weight << endl;
 			}
 		}
 
@@ -208,8 +201,9 @@ void Network::updateNeurons() {
 	for (it = neurons.begin(); it != neurons.end(); ++it) {
 		assert ((*it)->neuron != NULL);
 		if ((*it)->neuron->getLoc() != NL_INPUT) {
-//			cout << (*it)->input << endl;
 			(*it)->neuron->update((*it)->input);
+
+			//! the reset value is 20 half of the cases to represent random thalamic input
 			if (drand48() < 0.5)
 				(*it)->input = 0;
 			else

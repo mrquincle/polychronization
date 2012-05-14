@@ -26,15 +26,15 @@
  * The configuration for each neuron type is given by only 5 parameters in
  * Izhikevich models. The parameters are ordered: a b c d I
  */
-float NeuronConfig[]= {
+NN_VALUE NeuronConfig[][5]= {
 		0.02,  0.2,  -65,   6,    14,  // tonic spiking
 		0.02,  0.25, -65,   6,     0.5,// phasic spiking
 		0.02,  0.2,  -50,   2,    15,  // tonic bursting
 		0.02,  0.25, -55,   0.05,  0.6,// phasic bursting
 		0.02,  0.2,  -55,   4,    10,  // mixed mode
 		0.01,  0.2,  -65,   8,    30,  // spike frequency adaptation
-		0.02, -0.1,  -55,   6,     0,  // Class 1
-		0.2,   0.26, -65,   0,     0,  // Class 2
+		0.02, -0.1,  -55,   6,     0,  // class 1 excitatory
+		0.2,   0.26, -65,   0,     0,  // class 2 excitatory
 		0.02,  0.2,  -65,   6,     7,  // spike latency
 		0.05,  0.26, -60,   0,     0,  // subthreshold oscillations
 		0.1,   0.26, -60,  -1,     0,  // resonator
@@ -46,7 +46,12 @@ float NeuronConfig[]= {
 		1,     0.2,  -60, -21,     0,  // DAP
 		0.02,   1,   -55,   4,     0,  // accomodation
 		-0.02, -1,   -60,   8,    80,  // inhibition-induced spiking
-		-0.026,-1,   -45,   0,    80}; // inhibition-induced bursting
+		-0.026,-1,   -45,   0,    80,  // inhibition-induced bursting
+		0.02,  0.2,  -65,   8,     0,  // polychronous excitatory
+		0.1,   0.2,  -65,   2,     0   // polychronous inhibitory
+};
+
+#include <iostream>
 
 /**
  * Check the parameters at http://vesicle.nsi.edu/users/izhikevich/publications/figure1.m
@@ -56,41 +61,11 @@ Neuron::Neuron(NeuronType type, NeuronSign sign, NeuronLocation loc) {
 	this->type = type;
 	this->sign = sign;
 	this->loc = loc;
-	switch (type) {
-	case NT_TONIC_SPIKING:
-		a = +0.02; b = +0.20; c = -65.0; d = +6.00;
-		v = -70.0; u = v * b;
-		break;
-	case NT_PHASIC_SPIKING:
-		a = +0.02; b = +0.25; c = -65.0; d = +6.00;
-		v = -64.0; u = v * b;
-		break;
-	case NT_INTEGRATOR:
-		a = +0.02; b = -0.10; c = -55.0; d = +6.00;
-		v = -60.0; u = v * b;
-		break;
-	case NT_POLYCHRONOUS_EXCITATORY:
-		a = +0.02; b = +0.20; c = -65.0; d = +8.00;
-		v = -65.0; u = v * b;
-		break;
-	case NT_POLYCHRONOUS_INHIBITORY:
-		a = +0.1; b = +0.20; c = -65.0; d = +2.00;
-		v = -65.0; u = v * b;
-		break;
-	default:
-		v = -64.0;
-		u = v * 0.2;
-		b = +0.25;
-		c = -65.0;
-		if (sign == NS_EXCITATORY) {
-			a = +0.02; //should be randomized
-			d = +6.00;
-		} else {
-			a = +0.10;
-			d = +2.00;
-		}
-		break;
-	}
+	a = NeuronConfig[type][0];
+	b = NeuronConfig[type][1];
+	c = NeuronConfig[type][2];
+	d = NeuronConfig[type][3];
+	v = -65.0; u = v * b;
 }
 
 /**
@@ -112,6 +87,10 @@ bool Neuron::fired() {
  * Besides checking for the firing condition, the internal variables have to be updated. The
  * neuron does not know anything about the others, so the sum over all its inputs is provided
  * as one argument: input.
+ * Notice, the euler integration within this function is disabled. It is namely the case that
+ * if you integrate here multiple times in a for-loop you will not notice that v exceeds the
+ * firing threshold in the meantime. Hence, it is important to check for this threshold after
+ * every euler step.
  */
 void Neuron::update(NN_VALUE input) {
 	//printf("Parameters: %f, %f becomes with input I=%f: ", n->v, n->u, I);
