@@ -9,7 +9,7 @@ See the Neuron.cpp file for a concise implementation of a spiking neuron (also f
 
 The following picture visualizes 1000 neurons of which there are 800 excitatory. The outgoing synapses of these are adapted following an STDP rule (spike-time dependent plasticity). The outgoing synapses of the inhibitory neurons are not adapted.
 
-![alt text](https://github.com/mrquincle/rur-builder/raw/master/doc/spikes.jpeg "Spikes in a network of 1000 neurons")
+![alt text](https://github.com/mrquincle/polychronization/raw/master/doc/spikes.jpeg "Spikes in a network of 1000 neurons")
 
 The implementation tries to follow that of Izhikevich as close as possible, but uses C++ classes and std containers. It is slower, basically because if I don't care about speed I can program faster. :-) The neuron implementation is fine, the spike representation is moderately slow, but especially the network representation is meant for sparse networks (every neuron has a variable list of outgoing synapses).
 
