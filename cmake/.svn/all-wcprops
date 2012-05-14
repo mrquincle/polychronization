@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 31
+/svn/sandpile/!svn/ver/29/cmake
+END
+MacroEnsureOutOfSourceBuild.cmake
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/sandpile/!svn/ver/28/cmake/MacroEnsureOutOfSourceBuild.cmake
+END
+FindPLplot.cmake
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/sandpile/!svn/ver/28/cmake/FindPLplot.cmake
+END
+LibFindMacros.cmake
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/sandpile/!svn/ver/28/cmake/LibFindMacros.cmake
+END
